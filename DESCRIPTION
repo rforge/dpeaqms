@@ -1,0 +1,9 @@
+Package: dpeaqms
+Version: 0.1
+Date: 2011-01-21
+Title: Differential Protein Expression Analysis using Quantitative Mass Spectrometry Data (dpeaqms)
+Author: Howsun Jow <Howsun.Jow@ncl.ac.uk>
+Maintainer: Howsun Jow <Howsun.Jow@ncl.ac.uk>
+Depends: R (>= 2.6.0), rjags
+Description: Function to perform differential protein analysis of labeled quantitative mass spectrometrid data using Bayesian statistical inference
+License: LGPL
