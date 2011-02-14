@@ -78,9 +78,9 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
   # Numerically re-encode the experiment identifier vector
   levels(experimentID) <-seq(1,E)
   experimentID <- as.numeric(as.vector(experimentID))
-  expSamples = rep(0,E)
+  numberOfSamples = rep(0,E)
   for (i in seq(1,E)) {
-    expSamples[i] = length(unique(sampleID[experimentID==i]))
+    numberOfSamples[i] = length(unique(sampleID[experimentID==i]))
   }
   
   # Record the experiment offset i.e. where in the intensity vector
@@ -88,7 +88,7 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
   sampleoffset = rep(0,E)
   if (E > 1) {
    for (i in seq(2, E)) {
-     sampleoffset[i] = sampleoffset[i-1]+expSamples[i-1]
+     sampleoffset[i] = sampleoffset[i-1]+numberOfSamples[i-1]
     }
   }
  
@@ -105,8 +105,9 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
   
   # Number of measurements for each protein and their "offset" in the list
   N <- vector(mode="integer",length=P) 
+  m <- vector(mode="integer",length=P)
   offset <- vector(mode="integer" , length=P)
-  
+  moffset<- vector(mode="integer", length=P)
   # Factor SampleID
   sampleID    = factor(sampleID, levels=sort(unique.default(sampleID))) 
   sampleLevels = levels(sampleID)
@@ -135,7 +136,7 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
       temp = samplenumericlevels[soffset+1]
       samplenumericlevels[soffset+1] = samplenumericlevels[x]
       samplenumericlevels[x] = temp   
-      soffset = soffset + expSamples[i]
+      soffset = soffset + numberOfSamples[i]
       
     }      
   }
@@ -191,22 +192,25 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
   # Set the offset (i.e. what data point the protein observations start at) and number of observations per protein
   label = (pid==proteins[1])
   N[1] <- sum(label) 
+  m[1] <- length(unique(peptideID[label]))
   offset[1] = 0
+  moffset[1] = 0
   if (P > 1) {
    for (i in seq(2,P)) {
      prot = proteins[i] 
      label = (pid==prot)
      N[i] <- sum(label)      
+     m[i] <- length(unique(peptideID[label]))
      offset[i] <- offset[i-1] + N[i-1]   
+     moffset[i] <- moffset[i-1] + m[i-1]
    }
   }
-
+# print(moffset)
   # Set data and prior parameter values for the model
   modeldata = list("intensity"=intensity, "experiment"=experimentID, "offset"=offset, 
-                   "ExpSamples"=expSamples, "sampleoffset"=sampleoffset, 
+                   "numberOfSamples"=numberOfSamples, "sampleoffset"=sampleoffset, 
                    "group"=groupID, "peptide"=peptideID, "sample"=sampleID,
-                   "N"=N,"E"=E,"G"=G,
-                   "P"=P,"Npeptides"=Npeptides, 
+                   "N"=N,"E"=E,"G"=G,"moffset"=moffset,"m"=m,"P"=P,
                    "a.alpha"=a.alpha, "b.alpha"=b.alpha,
                    "a.gamma"=a.gamma,"b.gamma"=b.gamma,
                    "a.kappa"=a.kappa,"b.kappa"=b.kappa,
@@ -310,11 +314,11 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
     print(paste("Var Init = " , myvar))
   }
 
-  kappainit = matrix(nrow=E, ncol=max(expSamples), 0)
+  kappainit = matrix(nrow=E, ncol=max(numberOfSamples), 0)
  # for (e in seq(1,E)) {
-   # kappainit[e,] = rnorm(expSamples[e], mean=a.kappa, sd=sqrt(1/b.kappa))
+   # kappainit[e,] = rnorm(numberOfSamples[e], mean=a.kappa, sd=sqrt(1/b.kappa))
  # }
-  kappainit = matrix(nrow=E, ncol=max(expSamples), 0)
+  kappainit = matrix(nrow=E, ncol=max(numberOfSamples), 0)
  # print(kappainit)
   modelinits = list("Tau"=tauinit , "Alpha"=AlphaInit, "Gamma"=GammaInit, "Beta"=BetaInit, "p"=p , "kappa"=kappainit)
   
