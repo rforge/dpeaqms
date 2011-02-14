@@ -8,14 +8,15 @@ dpeaqms.model<- "model {
    # Alpha is the log-intensity for the control group for a given peptide instance k
    # Its prior is normally distributed. Ideally this should be set so that it is flat
    # over the dynamic range of your mass spectrometer
-   for (k in 1:Npeptides) {
-       Alpha[k] ~ dnorm(a.alpha,b.alpha)
+   for (j in 1:P) {
+     for (k in 1:m[j]) {
+        Alpha[moffset[j]+k] ~ dnorm(a.alpha,b.alpha)
+     }
    }
-   
   
    for (e in 1:E) {
      kappa[e,1] <- 0
-     for (s in 2:ExpSamples[e]) {
+     for (s in 2:numberOfSamples[e]) {
         kappa[e,s] ~ dnorm(a.kappa,b.kappa)
      }
    }
@@ -36,7 +37,7 @@ dpeaqms.model<- "model {
        Beta[g,j] ~ dbern(p[g,j]) 
        Gamma[g,j] ~ dnorm(a.gamma,b.gamma) ; 
      }  
-
+    
    # The model for the data likelihood (see documentation)
    for (n in 1:N[j]) {                 
         intensity[offset[j]+n] ~ dnorm(kappa[experiment[offset[j]+n] , sample[offset[j]+n]-sampleoffset[experiment[offset[j]+n]]] +
