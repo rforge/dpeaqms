@@ -1,56 +1,22 @@
 # R function that extracts MCMC sampled parameters from the
 # output of the dpeaqms.mcmc function
-dpeaqms.extract.sample<-function(datafile, dpeaqms_mcmc_sample, 
+dpeaqms.extract.sample<-function(msmsdata, dpeaqms_mcmc_sample, 
                                  controlGroup=NULL,  referenceSampleID=NULL,
 	                         samples, summaryOnly=F, outputprefix=NULL) {
-	
-  # Read in data from the specified file(s)
-  # This data file should have six columns
-  # Column 1 = Protein Identifier
-  # Column 2 = Peptide Identifier
-  # Column 3 = Peptide Replicate Identifier
-  # Column 4 = Sample Identifier
-  # Column 5 = Group Identifier
-  # Column 6 = Intensity Measurement
 
-  proteinColumn   = 1
-  intensityColumn = 2
-  peptideColumn   = 3
-  replicateColumn = 4
-  sampleColumn    = 5
-  groupColumn     = 6
-  
-  proteinID = c()
-  intensity = c()
-  peptideID = c() 
-  replicateID = c() 
-  sampleID = c()
-  groupID = c() 
-  experimentID = c()
-  expSamples = c()
+  proteinID    = msmsdata$proteinID
+  intensity    = msmsdata$intensity
+  peptideID    = msmsdata$peptideID
+  sampleID    = msmsdata$sampleID
+  groupID      = msmsdata$groupID
+  experimentID = msmsdata$experimentID
 
-  # Each experiment should have its own data file
-  # the argument "datafile" is a list of experiment files
-  Nexperiments = length(datafile)
+  E = length(unique(experimentID))
  
-  # Read in the MSMS quantitative data
-  for (i in seq(1,Nexperiments)) {
-     # Read the data to a temporary file
-     temp <- read.table(datafile[i], header=T, as.is=T)
-     proteinID = c(proteinID,temp[[proteinColumn]])
-     intensity = c(intensity, temp[[intensityColumn]])
-     # Tag the peptideID with an experiment number prefix and a "replicate" prefix
-     peptideID = c(peptideID , paste(temp[[peptideColumn]], ".Exp" , i , "." , temp[[replicateColumn]], sep=""))
-     # Tag the sample ID with an experiment number prefix
-     sampleID  = c(sampleID, paste("Exp", i , "." ,temp[[sampleColumn]], sep =""))
-     groupID = c(groupID, temp[[groupColumn]])
-     # Keep track of the number of samples in each experiment
-     expSamples = c(expSamples, length(unique(temp[[sampleColumn]])))
-     experimentID = c(experimentID, rep(i,length(temp[[proteinColumn]])))
-  }
-  
   # Log transform the intensity data if transform=T
- 
+  if (transform) {
+     intensity = log(intensity)
+  }
  
   # Order the data by protein, peptide, replicate and finally sample 
   myord = order(proteinID, peptideID, sampleID)
@@ -60,7 +26,7 @@ dpeaqms.extract.sample<-function(datafile, dpeaqms_mcmc_sample,
   sampleID = sampleID[myord]
   groupID = groupID[myord]
   experimentID  = experimentID[myord]
-
+  
   # Factor experiment identifiers
   experimentID = factor(experimentID, levels=sort(unique.default(experimentID)))
   # Make a note of the experiment identifiers

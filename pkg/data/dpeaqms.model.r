@@ -5,9 +5,8 @@ dpeaqms.model<- "model {
    Tau  ~ dgamma(a.tau,b.tau)   
    Sigma <- 1/sqrt(Tau) 
      
-   # Alpha is the log-intensity for the control group for a given peptide instance k
-   # Its prior is normally distributed. Ideally this should be set so that it is flat
-   # over the dynamic range of your mass spectrometer
+   # Alpha is the log-intensity for the reporter ion intensity of a control group
+   # for a given MS/MS spectrum.
    for (j in 1:P) {
      for (k in 1:m[j]) {
         Alpha[moffset[j]+k] ~ dnorm(a.alpha,b.alpha)
@@ -40,10 +39,13 @@ dpeaqms.model<- "model {
     
    # The model for the data likelihood (see documentation)
    for (n in 1:N[j]) {                 
-        intensity[offset[j]+n] ~ dnorm(kappa[experiment[offset[j]+n] , sample[offset[j]+n]-sampleoffset[experiment[offset[j]+n]]] +
-                                             Alpha[peptide[offset[j]+n]] +
-                                             Beta[group[offset[j]+n],j]*Gamma[group[offset[j]+n],j],
-                                             Tau);
+        intensity[offset[j]+n] ~ dnorm(kappa[experiment[offset[j]+n],
+                                       sample[offset[j]+n]-
+                                       sampleoffset[experiment[offset[j]+n]]] +
+                                       Alpha[peptide[offset[j]+n]] +
+                                       Beta[group[offset[j]+n],j]*
+                                       Gamma[group[offset[j]+n],j],
+                                       Tau);
      }      
      
    }    
