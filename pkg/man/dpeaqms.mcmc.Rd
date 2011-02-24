@@ -16,9 +16,9 @@
 }
 
 \arguments{
-  \item{msmsdata}{The MS/MS data in tabular format consisting of one
-    reporter ion per line with the fields proteinI, intensity,
-    peptideID, sampleID, groupID and experimentID}
+  \item{msmsdata}{A data frame containing the MS/MS data. The data frame
+    should have columns experimentID, proteinID, peptideID, intensity,
+    sampleID and groupID.}
     ID in that order. Any additional fields will be ignored. NULL by default}
   \item{burnin}{The number of initial MCMC iterations to be discarded.}
   \item{samples}{The number of samples to taken of the MCMC chain}
@@ -55,5 +55,7 @@
     the parameters used in the MCMC run}
   \item{verbose}{Print out information on the run progress}
 }
+
+\value{A sample from the posterior distribution in coda format}
 
 \keyword{mcmc, proteomics}
