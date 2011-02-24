@@ -1,12 +1,11 @@
 \name{dpeaqms.mcmc}
 \alias{dpeaqms.mcmc}
 
-\title{Samples from the posterior distribution of the dpeaqms JAGS model
-  using an Markov Chain Monte Carlo algorithm}
-
+\title{dpeaqms MCMC Sampling function}
+ 
 \description{A function that will take an MS/MS data object and run an
   MCMC algorithm to sample from the posterior distribution of the model
-  parameters}
+  (see dpeaqms.model) parameters}
 
 \usage{
   dpeaqms.mcmc(msmsdata, burnin, samples, thin,
@@ -18,12 +17,12 @@
 
 \arguments{
   \item{msmsdata}{The MS/MS data in tabular format consisting of one
-    reporter ion per line with the fields corresponding to Protein,
-    Intensity, Peptide Sequence , Replicate Number, Sample ID and Group
+    reporter ion per line with the fields proteinI, intensity,
+    peptideID, sampleID, groupID and experimentID}
     ID in that order. Any additional fields will be ignored. NULL by default}
-  \item{burnin}{The number of initial MCMC iterations to be sampled.}
+  \item{burnin}{The number of initial MCMC iterations to be discarded.}
   \item{samples}{The number of samples to taken of the MCMC chain}
-  \item{thin}{This is thinning interval on the sampled MCMC chain
+  \item{thin}{This is the thinning interval on the sampled MCMC chain
     i.e. the interval between consecutive samples}
   \item{a.alpha}{The mean of the Gaussian prior distribution on the
     model parameter alpha (See model description)}

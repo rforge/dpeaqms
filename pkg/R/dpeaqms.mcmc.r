@@ -51,7 +51,7 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
   proteinID    = msmsdata$proteinID
   intensity    = msmsdata$intensity
   peptideID    = msmsdata$peptideID
-  sampleID    = msmsdata$sampleID
+  sampleID     = msmsdata$sampleID
   groupID      = msmsdata$groupID
   experimentID = msmsdata$experimentID
 
