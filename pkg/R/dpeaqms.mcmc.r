@@ -13,7 +13,7 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
   
   # Load the R JAGS library
   require(rjags)
-  
+  data(dpeaqms.model)
   # End model specification
 
   # Record run parameters to the specified info file
@@ -47,13 +47,13 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
      cat(line,file=infofile)
      close(infofile)
   } 
-
-  proteinID    = msmsdata$proteinID
+  experimentID = msmsdata$experiment
+  proteinID    = msmsdata$protein
   intensity    = msmsdata$intensity
-  peptideID    = msmsdata$peptideID
-  sampleID     = msmsdata$sampleID
-  groupID      = msmsdata$groupID
-  experimentID = msmsdata$experimentID
+  peptideID    = paste("Exp" , experimentID, ".", msmsdata$peptide, sep = "")
+  sampleID     = paste("Exp" , experimentID, ".", msmsdata$sample , sep = "")
+  groupID      = msmsdata$group
+  
 
   E = length(unique(experimentID))
  

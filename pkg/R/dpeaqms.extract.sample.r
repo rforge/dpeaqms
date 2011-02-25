@@ -4,19 +4,17 @@ dpeaqms.extract.sample<-function(msmsdata, dpeaqms_mcmc_sample,
                                  controlGroup=NULL,  referenceSampleID=NULL,
 	                         samples, summaryOnly=F, outputprefix=NULL) {
 
-  proteinID    = msmsdata$proteinID
+ experimentID = msmsdata$experiment
+  proteinID    = msmsdata$protein
   intensity    = msmsdata$intensity
-  peptideID    = msmsdata$peptideID
-  sampleID    = msmsdata$sampleID
-  groupID      = msmsdata$groupID
-  experimentID = msmsdata$experimentID
+  peptideID    = paste("Exp" , experimentID, ".", msmsdata$peptide, sep = "")
+  sampleID     = paste("Exp" , experimentID, ".", msmsdata$sample , sep = "")
+  groupID      = msmsdata$group
+  
 
   E = length(unique(experimentID))
  
-  # Log transform the intensity data if transform=T
-  if (transform) {
-     intensity = log(intensity)
-  }
+ 
  
   # Order the data by protein, peptide, replicate and finally sample 
   myord = order(proteinID, peptideID, sampleID)
@@ -26,21 +24,25 @@ dpeaqms.extract.sample<-function(msmsdata, dpeaqms_mcmc_sample,
   sampleID = sampleID[myord]
   groupID = groupID[myord]
   experimentID  = experimentID[myord]
-  
+
   # Factor experiment identifiers
   experimentID = factor(experimentID, levels=sort(unique.default(experimentID)))
   # Make a note of the experiment identifiers
   experimentLevels = levels(experimentID)
   # Numerically re-encode the experiment identifier vector
-  levels(experimentID) <-seq(1,Nexperiments)
+  levels(experimentID) <-seq(1,E)
   experimentID <- as.numeric(as.vector(experimentID))
-
+  numberOfSamples = rep(0,E)
+  for (i in seq(1,E)) {
+    numberOfSamples[i] = length(unique(sampleID[experimentID==i]))
+  }
+  
   # Record the experiment offset i.e. where in the intensity vector
   # observations from the experiment start
-  sampleoffset = rep(0,Nexperiments)
-  if (Nexperiments > 1) {
-   for (i in seq(2, Nexperiments)) {
-     sampleoffset[i] = sampleoffset[i-1]+expSamples[i-1]
+  sampleoffset = rep(0,E)
+  if (E > 1) {
+   for (i in seq(2, E)) {
+     sampleoffset[i] = sampleoffset[i-1]+numberOfSamples[i-1]
     }
   }
  
@@ -51,14 +53,15 @@ dpeaqms.extract.sample<-function(msmsdata, dpeaqms_mcmc_sample,
   pid = proteinID
   # Get the proteins (in the order in which they appear in the data file)  
   proteins  <- levels(proteinID)
-  Nproteins <- length(proteins)
+  P <- length(proteins)
   # Numerically re-encode the proteins
   levels(proteinID)<-seq(1,length(levels(proteinID)))
   
   # Number of measurements for each protein and their "offset" in the list
-  N <- vector(mode="integer",length=Nproteins) 
-  offset <- vector(mode="integer" , length=Nproteins)
-  
+  N <- vector(mode="integer",length=P) 
+  m <- vector(mode="integer",length=P)
+  offset <- vector(mode="integer" , length=P)
+  moffset<- vector(mode="integer", length=P)
   # Factor SampleID
   sampleID    = factor(sampleID, levels=sort(unique.default(sampleID))) 
   sampleLevels = levels(sampleID)
@@ -70,7 +73,7 @@ dpeaqms.extract.sample<-function(msmsdata, dpeaqms_mcmc_sample,
   # If a reference sample (used for the sample normalization) is specified
   if (!is.null(referenceSampleID)) {
     soffset = 0 
-    for (i in seq(1,Nexperiments)) {
+    for (i in seq(1,E)) {
       # Use the specified sample identifier in each experiment as the reference     
       refSample = paste("Exp", i ,  "." , referenceSampleID, sep ="")
       # Make sure the reference samples specified is a valid samples
@@ -87,7 +90,7 @@ dpeaqms.extract.sample<-function(msmsdata, dpeaqms_mcmc_sample,
       temp = samplenumericlevels[soffset+1]
       samplenumericlevels[soffset+1] = samplenumericlevels[x]
       samplenumericlevels[x] = temp   
-      soffset = soffset + expSamples[i]
+      soffset = soffset + numberOfSamples[i]
       
     }      
   }
@@ -111,8 +114,8 @@ dpeaqms.extract.sample<-function(msmsdata, dpeaqms_mcmc_sample,
   # Numerically encode the group identifiers
   groupID = factor(groupID,levels=sort(unique(groupID)))
   groupLevels = levels(groupID)
-  Ngroups = length(groupLevels)
-  numericlevels <- seq(1,Ngroups)
+  G = length(groupLevels)
+  numericlevels <- seq(1,G)
   
   # If a control group is specified make sure it appears first in the list of groups
   if (!is.null(controlGroup)) {
@@ -130,27 +133,32 @@ dpeaqms.extract.sample<-function(msmsdata, dpeaqms_mcmc_sample,
     numericlevels[x] = temp    
   }
   
- levels(groupID) <- numericlevels
+
+   
+  levels(groupID) <- numericlevels
   groupID <- as.numeric(as.vector(groupID))
   # Set the offset (i.e. what data point the protein observations start at) and number of observations per protein
   label = (pid==proteins[1])
   N[1] <- sum(label) 
+  m[1] <- length(unique(peptideID[label]))
   offset[1] = 0
-  if (Nproteins > 1) {
-   for (i in seq(2,Nproteins)) {
+  moffset[1] = 0
+  if (P > 1) {
+   for (i in seq(2,P)) {
      prot = proteins[i] 
      label = (pid==prot)
      N[i] <- sum(label)      
+     m[i] <- length(unique(peptideID[label]))
      offset[i] <- offset[i-1] + N[i-1]   
+     moffset[i] <- moffset[i-1] + m[i-1]
    }
   }
-
 
   # If the full MCMC output is required for all parameters
   if (!summaryOnly) {
     pSampleString = paste("dpeaqms_mcmc_sample[[1]][1:" , samples," ,'p']", sep ='')
     # Print out the MCMC output for all parameters associated with the proteins in the datafile
-    for (i in seq(1,Nproteins)) {
+    for (i in seq(1,P)) {
       if (!is.null(outputprefix)) {
         proteinoutputname = paste(outputprefix, "." , proteins[i], ".samples",sep='')
       }
@@ -163,8 +171,8 @@ dpeaqms.extract.sample<-function(msmsdata, dpeaqms_mcmc_sample,
       BetaSampleString = ""
       GammaSampleString = ""
       
-      for (g in seq(2,Ngroups)) {        
-        if (Nproteins > 1) {
+      for (g in seq(2,G)) {        
+        if (P > 1) {
            pGroupSampleString = paste("dpeaqms_mcmc_sample[[1]][1:" , samples," ,'p[", g,",",i , "]']", sep ='')           
            betaGroupSampleString  = paste("dpeaqms_mcmc_sample[[1]][1:" , samples," ,'Beta[", g,",",i , "]']", sep ='')
            gammaGroupSampleString = paste("dpeaqms_mcmc_sample[[1]][1:" , samples," ,'Gamma[", g,",",i , "]']", sep ='')
@@ -191,7 +199,7 @@ dpeaqms.extract.sample<-function(msmsdata, dpeaqms_mcmc_sample,
       }
            
       SigmaSampleString = paste("dpeaqms_mcmc_sample[[1]][1:" , samples," ,'Sigma']", sep ='')      
-      if (i == Nproteins) {
+      if (i == P) {
        # print(paste("Last Protein" ,proteins[i]))
         peptideInstances = unique(peptideID[(offset[i]+1):length(peptideID)])
        #print(peptideInstances)
@@ -215,9 +223,9 @@ dpeaqms.extract.sample<-function(msmsdata, dpeaqms_mcmc_sample,
     }
 
    
-    for (e in seq(1,Nexperiments)) {     
-     for (s in seq(1,expSamples[e])) {
-         if (Nexperiments == 1) {
+    for (e in seq(1,E)) {     
+     for (s in seq(1,numberOfSamples[e])) {
+         if (E == 1) {
            kappaSampleString = paste("dpeaqms_mcmc_sample[[1]][1:" , samples," ,'kappa[" , s, "]']", sep ='')
          }
          else {
@@ -244,15 +252,15 @@ dpeaqms.extract.sample<-function(msmsdata, dpeaqms_mcmc_sample,
   }
 
   # Write a summary of the posterior output to a file
-  meanBeta  = matrix(0.0, nrow=Ngroups-1 , ncol=Nproteins)
-  meanBetaGamma = matrix(0.0, nrow=Ngroups-1 , ncol=Nproteins)
-  stdBetaGamma  = matrix(0,0, nrow=Ngroups-1 , ncol=Nproteins)
-  upregulatedWrtCtl = matrix(groupLevels[1] , nrow=Ngroups-1,ncol=Nproteins)
+  meanBeta  = matrix(0.0, nrow=G-1 , ncol=P)
+  meanBetaGamma = matrix(0.0, nrow=G-1 , ncol=P)
+  stdBetaGamma  = matrix(0,0, nrow=G-1 , ncol=P)
+  upregulatedWrtCtl = matrix(groupLevels[1] , nrow=G-1,ncol=P)
  
-  for (i in seq(1,Nproteins)) {
+  for (i in seq(1,P)) {
     theline = proteins[i]
-    for (g in seq(2,Ngroups)) {  
-      if (Nproteins > 1) {
+    for (g in seq(2,G)) {  
+      if (P > 1) {
       betaGammaEvalString =  paste("mean(dpeaqms_mcmc_sample[[1]][1:", samples,",'Beta[" , g,",",i , "]'] * ", 
                                         "dpeaqms_mcmc_sample[[1]][1:",samples,",'Gamma[" , g, ",",i , "]']" , ")", sep ='')
 
@@ -268,7 +276,7 @@ dpeaqms.extract.sample<-function(msmsdata, dpeaqms_mcmc_sample,
       meanBetaGamma[g-1,i] = eval(parse(text=betaGammaEvalString))
       theline = paste(theline, "\t" , meanBeta[g-1,i])
       theline = paste(theline, "\t" , meanBetaGamma[g-1,i])
-      if (Nproteins > 1) {
+      if (P > 1) {
       betaGammaEvalString =  paste("sd(dpeaqms_mcmc_sample[[1]][1:", samples,",'Beta[" , g,",",i , "]'] * ", 
                                         "dpeaqms_mcmc_sample[[1]][1:",samples,",'Gamma[" , g, ",",i , "]']" , ")", sep ='')
       }
@@ -283,14 +291,12 @@ dpeaqms.extract.sample<-function(msmsdata, dpeaqms_mcmc_sample,
       }      
       theline = paste(theline, "\t" , upregulatedWrtCtl[g-1,i])
     }
-  #  if (verbose) {
-  #     print(theline)
-  #  }
+ 
   }
 
 
    resultsEvalString = "data.frame(Protein=proteins"   
-   for (g in seq(2,Ngroups)) {
+   for (g in seq(2,G)) {
       resultsEvalString = paste(resultsEvalString, ",",
                                 "mean.Beta.",  groupLevels[g], "=meanBeta[", g-1 , ",]," ,
                                 "mean.Beta.x.Gamma.", groupLevels[g], "=meanBetaGamma[",g-1 , ",]," ,

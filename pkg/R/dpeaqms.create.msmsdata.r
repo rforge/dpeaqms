@@ -35,15 +35,15 @@ dpeaqms.create.msmsdata<-function(datafiles) {
      proteinID = c(proteinID,temp[[proteinColumn]])
      intensity = c(intensity, temp[[intensityColumn]])
      # Tag the peptideID with an experiment number prefix and a "replicate" prefix
-     peptideID = c(peptideID , paste(temp[[peptideColumn]], ".Exp" , i , "." , temp[[replicateColumn]], sep=""))
+     peptideID = c(peptideID , paste(temp[[peptideColumn]], "." , temp[[replicateColumn]], sep=""))
      # Tag the sample ID with an experiment number prefix
-     sampleID  = c(sampleID, paste("Exp", i , "." ,temp[[sampleColumn]], sep =""))
+     sampleID  = c(sampleID, temp[[sampleColumn]])
      groupID = c(groupID, temp[[groupColumn]])
      # Keep track of the number of samples in each experiment     
      experimentID = c(experimentID, rep(i,length(temp[[proteinColumn]])))
   }
 
-  msmsdata <- data.frame("experimentID"=experimentID, "proteinID"=proteinID, "peptideID"=peptideID ,
-                         "intensity"=intensity , "sampleID"=sampleID , "groupID"=groupID)
+  msmsdata <- data.frame("experiment"=experimentID, "protein"=proteinID, "peptide"=peptideID ,
+                         "intensity"=intensity , "sample"=sampleID , "group"=groupID)
   return(msmsdata)
 }

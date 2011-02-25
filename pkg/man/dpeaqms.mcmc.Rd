@@ -19,7 +19,6 @@
   \item{msmsdata}{A data frame containing the MS/MS data. The data frame
     should have columns experimentID, proteinID, peptideID, intensity,
     sampleID and groupID.}
-    ID in that order. Any additional fields will be ignored. NULL by default}
   \item{burnin}{The number of initial MCMC iterations to be discarded.}
   \item{samples}{The number of samples to taken of the MCMC chain}
   \item{thin}{This is the thinning interval on the sampled MCMC chain
