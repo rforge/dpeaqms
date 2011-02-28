@@ -12,7 +12,7 @@
                a.alpha, b.alpha, a.gamma,  b.gamma,
                a.tau, b.tau,a.kappa, b.kappa, 
                a.p, b.p, controlGroup, referenceSampleID, 
-	       transform, infofilename, verbose)
+	       transform, infofilename, verbose, seed)
 }
 
 \arguments{

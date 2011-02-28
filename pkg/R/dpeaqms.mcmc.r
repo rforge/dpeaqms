@@ -223,7 +223,9 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
   
   # Initializate "p" parameter
   
- 
+  if (!is.null(seed)) {
+    set.seed(seed)
+  }
   # Initialize Beta parameter by simulating from its prior
   BetaInit = matrix(nrow=G, ncol=P)  
   p        = matrix(nrow=G, ncol=P)
@@ -327,7 +329,8 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
   }
   else {
     modelinits = list("Tau"=tauinit , "Alpha"=AlphaInit, "Gamma"=GammaInit,
-                      "Beta"=BetaInit, "p"=p , "kappa"=kappainit,".RNG.seed"=seed)   
+                      "Beta"=BetaInit, "p"=p , "kappa"=kappainit,
+                      ".RNG.name"="base::Mersenne-Twister", ".RNG.seed"=seed)   
   }
   tempfilename = tempfile()
   myc<-file(tempfilename, open="w")
