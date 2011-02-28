@@ -9,14 +9,15 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
                        a.kappa=0.0,b.kappa=1.0/9.0, 
                        a.p=1.0, b.p=19.0,
                        controlGroup=NULL, referenceSampleID=NULL, 
-	               transform=T, infofilename=NULL, verbose=F) {
+	               transform=T, infofilename=NULL, verbose=F, seed=NULL) {
   
   # Load the R JAGS library
   require(rjags)
+  # Load the differential protein expression model
   data(dpeaqms.model)
-  # End model specification
-
-  # Record run parameters to the specified info file
+ 
+  # Record MCMC parameters i.e. burn-in, samples, thinning and prior parameters
+  # run parameters to the specified info file
   if (!is.null(infofilename)) {
      infofile = file(infofilename, "w")
      line = paste('a.alpha = ' , a.alpha, '\n')
@@ -320,8 +321,14 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
  # }
   kappainit = matrix(nrow=E, ncol=max(numberOfSamples), 0)
  # print(kappainit)
-  modelinits = list("Tau"=tauinit , "Alpha"=AlphaInit, "Gamma"=GammaInit, "Beta"=BetaInit, "p"=p , "kappa"=kappainit)
-  
+  if (is.null(seed)) {
+    modelinits = list("Tau"=tauinit , "Alpha"=AlphaInit, "Gamma"=GammaInit,
+                      "Beta"=BetaInit, "p"=p , "kappa"=kappainit)   
+  }
+  else {
+    modelinits = list("Tau"=tauinit , "Alpha"=AlphaInit, "Gamma"=GammaInit,
+                      "Beta"=BetaInit, "p"=p , "kappa"=kappainit,".RNG.seed"=seed)   
+  }
   tempfilename = tempfile()
   myc<-file(tempfilename, open="w")
   cat(dpeaqms.model,file=myc)

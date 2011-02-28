@@ -53,6 +53,8 @@
   \item{infofilename}{Specifies the name of the file to which to output
     the parameters used in the MCMC run}
   \item{verbose}{Print out information on the run progress}
+  \item{seed}{Always the user to set the seed of the RNG used by JAGS
+    for reproducible output}
 }
 
 \value{A sample from the posterior distribution in coda format}
