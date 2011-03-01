@@ -51,7 +51,7 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
   experimentID = msmsdata$experiment
   proteinID    = msmsdata$protein
   intensity    = msmsdata$intensity
-  peptideID    = paste("Exp" , experimentID, ".", msmsdata$peptide, sep = "")
+  msmsID    = paste("Exp" , experimentID, ".", msmsdata$msmsID, sep = "")
   sampleID     = paste("Exp" , experimentID, ".", msmsdata$sample , sep = "")
   groupID      = msmsdata$group
   
@@ -64,9 +64,9 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
   }
  
   # Order the data by protein, peptide, replicate and finally sample 
-  myord = order(proteinID, peptideID, sampleID)
+  myord = order(proteinID, msmsID, sampleID)
   proteinID = proteinID[myord]
-  peptideID = peptideID[myord]
+  msmsID = msmsID[myord]
   intensity = intensity[myord]
   sampleID = sampleID[myord]
   groupID = groupID[myord]
@@ -149,14 +149,14 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
   sampleID <- as.numeric(as.vector(sampleID))
 
   # Determine the peptide/replicate blocks 
-  peptideID = factor(peptideID, levels=unique.default(peptideID))
+  msmsID = factor(msmsID, levels=unique.default(msmsID))
   # Remove reserved operator symbols from peptide sequences and modifiers
-  peptideNames = gsub('[(|)|\"]', '' , unique.default(peptideID))
+  peptideNames = gsub('[(|)|\"]', '' , unique.default(msmsID))
  
   # Numerically encode the peptides
-  Npeptides <- length(levels(peptideID))
-  levels(peptideID) <- seq(1,length(levels(peptideID)))
-  peptideID <- as.numeric(as.vector(peptideID))
+  Npeptides <- length(levels(msmsID))
+  levels(msmsID) <- seq(1,length(levels(msmsID)))
+  msmsID <- as.numeric(as.vector(msmsID))
   
   if (verbose) {
      print(paste("Processing " , Npeptides , " MSMS spectra" , sep=""))
@@ -193,7 +193,7 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
   # Set the offset (i.e. what data point the protein observations start at) and number of observations per protein
   label = (pid==proteins[1])
   N[1] <- sum(label) 
-  m[1] <- length(unique(peptideID[label]))
+  m[1] <- length(unique(msmsID[label]))
   offset[1] = 0
   moffset[1] = 0
   if (P > 1) {
@@ -201,7 +201,7 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
      prot = proteins[i] 
      label = (pid==prot)
      N[i] <- sum(label)      
-     m[i] <- length(unique(peptideID[label]))
+     m[i] <- length(unique(msmsID[label]))
      offset[i] <- offset[i-1] + N[i-1]   
      moffset[i] <- moffset[i-1] + m[i-1]
    }
@@ -210,7 +210,7 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
   # Set data and prior parameter values for the model
   modeldata = list("intensity"=intensity, "experiment"=experimentID, "offset"=offset, 
                    "numberOfSamples"=numberOfSamples, "sampleoffset"=sampleoffset, 
-                   "group"=groupID, "peptide"=peptideID, "sample"=sampleID,
+                   "group"=groupID, "peptide"=msmsID, "sample"=sampleID,
                    "N"=N,"E"=E,"G"=G,"moffset"=moffset,"m"=m,"P"=P,
                    "a.alpha"=a.alpha, "b.alpha"=b.alpha,
                    "a.gamma"=a.gamma,"b.gamma"=b.gamma,
@@ -252,10 +252,10 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
   # are differentially expressed
   AlphaInit = vector(length=Npeptides,mode="numeric")  
   for (i in seq(1,Npeptides)) {
-    labelmatch = (peptideID==i)  
+    labelmatch = (msmsID==i)  
     # print(sum(labelmatch))
     # Should be length one if peptides are unique to proteins
-    peptideprotein = unique(proteinID[peptideID==i])
+    peptideprotein = unique(proteinID[msmsID==i])
     
     if (length(peptideprotein) > 1) {
       print(paste("Error: Peptide " , peptideNames[i] , " assigned to proteins:" , peptideprotein, sep=""))
@@ -282,9 +282,9 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
     for (i in seq(1,P)) {
       ObsG = c() 
       if (BetaInit[g,i] == 1) {      
-        proteinpeptideinstancesInd = unique(peptideID[proteinID==i])     
+        proteinpeptideinstancesInd = unique(msmsID[proteinID==i])     
         for (k in proteinpeptideinstancesInd) {     
-          obsG = c(ObsG,mean(intensity[(peptideID==k) & (groupID==g)]) -  AlphaInit[k])
+          obsG = c(ObsG,mean(intensity[(msmsID==k) & (groupID==g)]) -  AlphaInit[k])
         }
         GammaInit[g,i] = mean(obsG)
         # If there are no observed intensities for samples in group g for a particular protein
@@ -307,7 +307,7 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
   sum = 0.0
   for (j in seq(1,length(intensity))) {
     Y = intensity[j]
-    sum = sum + (Y - AlphaInit[peptideID[j]] - (GammaInit[groupID[j],proteinID[j]] * BetaInit[groupID[j],proteinID[j]]))^2
+    sum = sum + (Y - AlphaInit[msmsID[j]] - (GammaInit[groupID[j],proteinID[j]] * BetaInit[groupID[j],proteinID[j]]))^2
   }
   # tau is the inverse variance i.e. the precision
   #print(paste("sum = ", sum))

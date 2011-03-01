@@ -1,0 +1,41 @@
+\documentclass [a4paper]{article}
+\usepackage{url}
+\title{What is dpeaqms?}
+\author{Howsun Jow}
+
+\begin{document}
+\maketitle
+
+\section{Overview}
+dpeaqms stands for \bf{D}ifferential \bf{P}rotein \bf{E}xpression 
+\bf{Analysis} using \bf{Q}uantitative \bf{M}ass \bf{S}pectrometry. 
+More specifically it is a package of statistical tools for the
+analysis of quantitative proteomic data, obtained from mass spectrometric 
+analyses of isobaric labelled protein samples, for differential
+expression between groups to which the samples are assigned. Examples
+of stable isotope labelling techniques include SILAC, iTRAQ and TMT.
+
+The package is written in the R language (\url{www.r-project.org}) but 
+requires only basic understanding of the language in order to use.
+
+\section{Prerequisites}
+
+A Bayesian statistical approach is used for the analyses carried out
+by the tools in the package. This makes use of the rjags package
+which provides an interface to JAGS (Just Another Gibbsian Sampler) 
+(\url{http://www-ice.iarc.fr/~martyn/software/jags/}) native libraries. 
+Both will need to be installed in order to use the dpeaqms.
+
+
+\section{The Data}
+
+The dpeaqms package takes in data in simple tabular text format with
+the column headers: \bf{experiment, msmsID, protein, sample, group} and 
+\bf{intensity}.
+
+Each line describes a single data point consisting of an experiment ID 
+(``experiment''), an msms spectrum id (``msmsID''), a protein to which the 
+msms spectrum is assigned (``protein''), an intensity measure (``intensity''),
+a sample identifier (``sample'') and a group identifier (``group'').
+
+\end{document}

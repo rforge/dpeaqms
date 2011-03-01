@@ -17,8 +17,8 @@
 
 \arguments{
   \item{msmsdata}{A data frame containing the MS/MS data. The data frame
-    should have columns experimentID, proteinID, peptideID, intensity,
-    sampleID and groupID.}
+    should have columns experiment, protein, msmsID, intensity,
+    sample and group.}
   \item{burnin}{The number of initial MCMC iterations to be discarded.}
   \item{samples}{The number of samples to taken of the MCMC chain}
   \item{thin}{This is the thinning interval on the sampled MCMC chain

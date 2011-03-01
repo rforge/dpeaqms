@@ -1,4 +1,4 @@
-experiment protein peptide intensity sample group
+experiment protein  msmsID intensity sample group
 1 SimulatedProtein1 SimulatedProtein1.Peptide1  5.40184352612 CTL.1 CTL
 1 SimulatedProtein1 SimulatedProtein1.Peptide1  5.18764675643 CTL.2 CTL
 1 SimulatedProtein1 SimulatedProtein1.Peptide1  5.18657635198 TRT1.1 TRT1
