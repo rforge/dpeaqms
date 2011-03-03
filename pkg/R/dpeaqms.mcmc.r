@@ -126,7 +126,7 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
       # Make sure the reference samples specified is a valid samples
       x = match(refSample, sampleLevels)      
       if (is.na(x)) {
-        print(paste("Error: Unable to find specified reference sample \"" , refSample , "\" in Experiment " , datafile[i], sep=""))
+        print(paste("Error: Unable to find specified reference sample \"" , refSample ,  sep=""))
         return(NULL)
       }
       # Reorder the sample levels so that the specified sample identifers are the first

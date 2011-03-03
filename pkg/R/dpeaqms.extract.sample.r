@@ -1,8 +1,8 @@
 # R function that extracts MCMC sampled parameters from the
 # output of the dpeaqms.mcmc function
-dpeaqms.extract.sample<-function(msmsdata, dpeaqms_mcmc_sample, 
+dpeaqms.extract.sample<-function(msmsdata=NULL, mcmc_sample, numberOfMCMCSamples,
                                  controlGroup=NULL,  referenceSampleID=NULL,
-	                         samples, summaryOnly=F, outputprefix=NULL) {
+	                         summaryOnly=F, outputprefix=NULL) {
 
  experimentID = msmsdata$experiment
   proteinID    = msmsdata$protein
@@ -79,7 +79,7 @@ dpeaqms.extract.sample<-function(msmsdata, dpeaqms_mcmc_sample,
       # Make sure the reference samples specified is a valid samples
       x = match(refSample, sampleLevels)      
       if (is.na(x)) {
-        print(paste("Error: Unable to find specified reference sample \"" , refSample , "\" in Experiment " , datafile[i], sep=""))
+        print(paste("Error: Unable to find specified reference sample"))
         return(NULL)
       }
       # Reorder the sample levels so that the specified sample identifers are the first
@@ -156,7 +156,7 @@ dpeaqms.extract.sample<-function(msmsdata, dpeaqms_mcmc_sample,
 
   # If the full MCMC output is required for all parameters
   if (!summaryOnly) {
-    pSampleString = paste("dpeaqms_mcmc_sample[[1]][1:" , samples," ,'p']", sep ='')
+    pSampleString = paste("mcmc_sample[[1]][1:" , numberOfMCMCSamples," ,'p']", sep ='')
     # Print out the MCMC output for all parameters associated with the proteins in the datafile
     for (i in seq(1,P)) {
       if (!is.null(outputprefix)) {
@@ -173,14 +173,14 @@ dpeaqms.extract.sample<-function(msmsdata, dpeaqms_mcmc_sample,
       
       for (g in seq(2,G)) {        
         if (P > 1) {
-           pGroupSampleString = paste("dpeaqms_mcmc_sample[[1]][1:" , samples," ,'p[", g,",",i , "]']", sep ='')           
-           betaGroupSampleString  = paste("dpeaqms_mcmc_sample[[1]][1:" , samples," ,'Beta[", g,",",i , "]']", sep ='')
-           gammaGroupSampleString = paste("dpeaqms_mcmc_sample[[1]][1:" , samples," ,'Gamma[", g,",",i , "]']", sep ='')
+           pGroupSampleString = paste("mcmc_sample[[1]][1:" , numberOfMCMCSamples," ,'p[", g,",",i , "]']", sep ='')           
+           betaGroupSampleString  = paste("mcmc_sample[[1]][1:" , numberOfMCMCSamples," ,'Beta[", g,",",i , "]']", sep ='')
+           gammaGroupSampleString = paste("mcmc_sample[[1]][1:" , numberOfMCMCSamples," ,'Gamma[", g,",",i , "]']", sep ='')
         }
         else {
-           pGroupSampleString = paste("dpeaqms_mcmc_sample[[1]][1:" , samples," ,'p[", g,"]']", sep ='')
-           betaGroupSampleString  = paste("dpeaqms_mcmc_sample[[1]][1:" , samples," , 'Beta[", g, "]']", sep ='')
-           gammaGroupSampleString = paste("dpeaqms_mcmc_sample[[1]][1:" , samples," ,'Gamma[", g, "]']", sep ='')
+           pGroupSampleString = paste("mcmc_sample[[1]][1:" , numberOfMCMCSamples," ,'p[", g,"]']", sep ='')
+           betaGroupSampleString  = paste("mcmc_sample[[1]][1:" , numberOfMCMCSamples," , 'Beta[", g, "]']", sep ='')
+           gammaGroupSampleString = paste("mcmc_sample[[1]][1:" , numberOfMCMCSamples," ,'Gamma[", g, "]']", sep ='')
         }
         if (BetaSampleString == "") {
            PSampleString = paste("p.",groupLevels[g],".",proteins[i], "=eval(", pGroupSampleString, ")", sep="")
@@ -198,7 +198,7 @@ dpeaqms.extract.sample<-function(msmsdata, dpeaqms_mcmc_sample,
         }               
       }
            
-      SigmaSampleString = paste("dpeaqms_mcmc_sample[[1]][1:" , samples," ,'Sigma']", sep ='')      
+      SigmaSampleString = paste("mcmc_sample[[1]][1:" , numberOfMCMCSamples," ,'Sigma']", sep ='')      
       if (i == P) {
        # print(paste("Last Protein" ,proteins[i]))
         peptideInstances = unique(peptideID[(offset[i]+1):length(peptideID)])
@@ -209,27 +209,27 @@ dpeaqms.extract.sample<-function(msmsdata, dpeaqms_mcmc_sample,
       }
       ppeptides = length(peptideInstances)   
     
-      blockEffectString = paste("Alpha." , peptideNames[peptideInstances[1]] , "=" , "dpeaqms_mcmc_sample[[1]][1:" , samples,",'Alpha[", peptideInstances[1], "]']", sep='')
+      blockEffectString = paste("Alpha." , peptideNames[peptideInstances[1]] , "=" , "mcmc_sample[[1]][1:" , numberOfMCMCSamples,",'Alpha[", peptideInstances[1], "]']", sep='')
       if (ppeptides > 1) {
         for (p in seq(2,ppeptides)) {
-          blockEffectString = paste(blockEffectString , ",Alpha." ,peptideNames[peptideInstances[p]]  , "=dpeaqms_mcmc_sample[[1]][1:" , samples," ,'Alpha[", peptideInstances[p], "]']", sep='')
+          blockEffectString = paste(blockEffectString , ",Alpha." ,peptideNames[peptideInstances[p]]  , "=mcmc_sample[[1]][1:" , numberOfMCMCSamples," ,'Alpha[", peptideInstances[p], "]']", sep='')
         }
       }
           
       proteinoutputsamplesString = paste("data.frame(" , PSampleString, "," ,  BetaSampleString , "," ,GammaSampleString, ", Sigma=eval(parse(text=SigmaSampleString)),", blockEffectString , ")", sep='')    
       print(proteinoutputname)      
       proteinoutputsamples = eval(parse(text=proteinoutputsamplesString))  
-      write.table(proteinoutputsamples,quote=FALSE, sep="\t", row.names=FALSE, file=proteinoutputname)
+      write.table(proteinoutputnumberOfMCMCSamples,quote=FALSE, sep="\t", row.names=FALSE, file=proteinoutputname)
     }
 
    
     for (e in seq(1,E)) {     
      for (s in seq(1,numberOfSamples[e])) {
          if (E == 1) {
-           kappaSampleString = paste("dpeaqms_mcmc_sample[[1]][1:" , samples," ,'kappa[" , s, "]']", sep ='')
+           kappaSampleString = paste("mcmc_sample[[1]][1:" , numberOfMCMCSamples," ,'kappa[" , s, "]']", sep ='')
          }
          else {
-           kappaSampleString = paste("dpeaqms_mcmc_sample[[1]][1:" , samples," ,'kappa[" , e, "," , s, "]']", sep ='')
+           kappaSampleString = paste("mcmc_sample[[1]][1:" , numberOfMCMCSamples," ,'kappa[" , e, "," , s, "]']", sep ='')
          }
          if ((s == 1) && (e==1)){
            kappaString = paste("kappa.", sampleLevels[sampleoffset[e]+s] , "=eval(" , kappaSampleString , ")" , sep="") ;
@@ -261,28 +261,28 @@ dpeaqms.extract.sample<-function(msmsdata, dpeaqms_mcmc_sample,
     theline = proteins[i]
     for (g in seq(2,G)) {  
       if (P > 1) {
-      betaGammaEvalString =  paste("mean(dpeaqms_mcmc_sample[[1]][1:", samples,",'Beta[" , g,",",i , "]'] * ", 
-                                        "dpeaqms_mcmc_sample[[1]][1:",samples,",'Gamma[" , g, ",",i , "]']" , ")", sep ='')
+      betaGammaEvalString =  paste("mean(mcmc_sample[[1]][1:", numberOfMCMCSamples,",'Beta[" , g,",",i , "]'] * ", 
+                                        "mcmc_sample[[1]][1:",numberOfMCMCSamples,",'Gamma[" , g, ",",i , "]']" , ")", sep ='')
 
-      betaEvalString   = paste("mean(dpeaqms_mcmc_sample[[1]][1:", samples,",'Beta[" , g,",",i , "]'])", sep ='')      
+      betaEvalString   = paste("mean(mcmc_sample[[1]][1:", numberOfMCMCSamples,",'Beta[" , g,",",i , "]'])", sep ='')      
       }
       else {
-      betaGammaEvalString =  paste("mean(dpeaqms_mcmc_sample[[1]][1:", samples,",'Beta[" , g , "]'] * ", 
-                                        "dpeaqms_mcmc_sample[[1]][1:",samples,",'Gamma[" , g,  "]']" , ")", sep ='')
+      betaGammaEvalString =  paste("mean(mcmc_sample[[1]][1:", numberOfMCMCSamples,",'Beta[" , g , "]'] * ", 
+                                        "mcmc_sample[[1]][1:",numberOfMCMCSamples,",'Gamma[" , g,  "]']" , ")", sep ='')
 
-      betaEvalString   = paste("mean(dpeaqms_mcmc_sample[[1]][1:", samples,",'Beta[" , g, "]'])", sep ='')   
+      betaEvalString   = paste("mean(mcmc_sample[[1]][1:", numberOfMCMCSamples,",'Beta[" , g, "]'])", sep ='')   
       }
       meanBeta[g-1,i]  = eval(parse(text=betaEvalString))
       meanBetaGamma[g-1,i] = eval(parse(text=betaGammaEvalString))
       theline = paste(theline, "\t" , meanBeta[g-1,i])
       theline = paste(theline, "\t" , meanBetaGamma[g-1,i])
       if (P > 1) {
-      betaGammaEvalString =  paste("sd(dpeaqms_mcmc_sample[[1]][1:", samples,",'Beta[" , g,",",i , "]'] * ", 
-                                        "dpeaqms_mcmc_sample[[1]][1:",samples,",'Gamma[" , g, ",",i , "]']" , ")", sep ='')
+      betaGammaEvalString =  paste("sd(mcmc_sample[[1]][1:", numberOfMCMCSamples,",'Beta[" , g,",",i , "]'] * ", 
+                                        "mcmc_sample[[1]][1:",numberOfMCMCSamples,",'Gamma[" , g, ",",i , "]']" , ")", sep ='')
       }
       else {
-      betaGammaEvalString =  paste("sd(dpeaqms_mcmc_sample[[1]][1:", samples,",'Beta[" , g, "]'] * ", 
-                                        "dpeaqms_mcmc_sample[[1]][1:",samples,",'Gamma[" , g, "]']" , ")", sep ='')
+      betaGammaEvalString =  paste("sd(mcmc_sample[[1]][1:", numberOfMCMCSamples,",'Beta[" , g, "]'] * ", 
+                                        "mcmc_sample[[1]][1:",numberOfMCMCSamples,",'Gamma[" , g, "]']" , ")", sep ='')
       } 
       stdBetaGamma[g-1,i]  = eval(parse(text=betaGammaEvalString))
       theline = paste(theline, "\t" , stdBetaGamma[g-1,i])

@@ -1,14 +1,15 @@
+
 \documentclass [a4paper]{article}
 \usepackage{url}
 \title{What is dpeaqms?}
 \author{Howsun Jow}
-
+% \VignetteIndexEntry{dpeaqms}
 \begin{document}
 \maketitle
 
 \section{Overview}
-dpeaqms stands for \bf{D}ifferential \bf{P}rotein \bf{E}xpression 
-\bf{Analysis} using \bf{Q}uantitative \bf{M}ass \bf{S}pectrometry. 
+dpeaqms stands for {\bf D}ifferential {\bf P}rotein {\bf E}xpression 
+{\bf Analysis} using {\bf Q}uantitative {\bf M}ass {\bf S}pectrometry. 
 More specifically it is a package of statistical tools for the
 analysis of quantitative proteomic data, obtained from mass spectrometric 
 analyses of isobaric labelled protein samples, for differential
@@ -30,8 +31,8 @@ Both will need to be installed in order to use the dpeaqms.
 \section{The Data}
 
 The dpeaqms package takes in data in simple tabular text format with
-the column headers: \bf{experiment, msmsID, protein, sample, group} and 
-\bf{intensity}.
+the column headers: {\bf experiment, msmsID, protein, sample, group} and 
+{\bf intensity}.
 
 Each line describes a single data point consisting of an experiment ID 
 (``experiment''), an msms spectrum id (``msmsID''), a protein to which the 
