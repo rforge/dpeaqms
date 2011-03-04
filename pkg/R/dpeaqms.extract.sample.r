@@ -219,7 +219,7 @@ dpeaqms.extract.sample<-function(msmsdata=NULL, mcmc_sample, numberOfMCMCSamples
       proteinoutputsamplesString = paste("data.frame(" , PSampleString, "," ,  BetaSampleString , "," ,GammaSampleString, ",", blockEffectString , ")", sep='')    
       print(proteinoutputname)      
       proteinoutputsamples = eval(parse(text=proteinoutputsamplesString))  
-      write.table(proteinoutputnumberOfMCMCSamples,quote=FALSE, sep="\t", row.names=FALSE, file=proteinoutputname)
+      write.table(proteinoutputsamples,quote=FALSE, sep="\t", row.names=FALSE, file=proteinoutputname)
     }
     if (!is.null(outputprefix)) {
       sigmaoutputname = paste(outputprefix, "." , "sigma.samples",sep='')
