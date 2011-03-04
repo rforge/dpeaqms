@@ -7,7 +7,7 @@ dpeaqms.extract.sample<-function(msmsdata=NULL, mcmc_sample, numberOfMCMCSamples
  experimentID = msmsdata$experiment
   proteinID    = msmsdata$protein
   intensity    = msmsdata$intensity
-  peptideID    = paste("Exp" , experimentID, ".", msmsdata$peptide, sep = "")
+  msmsID    = paste("Exp" , experimentID, ".", msmsdata$msmsID, sep = "")
   sampleID     = paste("Exp" , experimentID, ".", msmsdata$sample , sep = "")
   groupID      = msmsdata$group
   
@@ -17,9 +17,9 @@ dpeaqms.extract.sample<-function(msmsdata=NULL, mcmc_sample, numberOfMCMCSamples
  
  
   # Order the data by protein, peptide, replicate and finally sample 
-  myord = order(proteinID, peptideID, sampleID)
+  myord = order(proteinID, msmsID, sampleID)
   proteinID = proteinID[myord]
-  peptideID = peptideID[myord]
+  msmsID = msmsID[myord]
   intensity = intensity[myord]
   sampleID = sampleID[myord]
   groupID = groupID[myord]
@@ -100,14 +100,14 @@ dpeaqms.extract.sample<-function(msmsdata=NULL, mcmc_sample, numberOfMCMCSamples
   sampleID <- as.numeric(as.vector(sampleID))
 
   # Determine the peptide/replicate blocks 
-  peptideID = factor(peptideID, levels=unique.default(peptideID))
+  msmsID = factor(msmsID, levels=unique.default(msmsID))
   # Remove reserved operator symbols from peptide sequences and modifiers
-  peptideNames = gsub('[(|)|\"]', '' , unique.default(peptideID))
+  peptideNames = gsub('[(|)|\"]', '' , unique.default(msmsID))
  
   # Numerically encode the peptides
-  Npeptides <- length(levels(peptideID))
-  levels(peptideID) <- seq(1,length(levels(peptideID)))
-  peptideID <- as.numeric(as.vector(peptideID))
+  Npeptides <- length(levels(msmsID))
+  levels(msmsID) <- seq(1,length(levels(msmsID)))
+  msmsID <- as.numeric(as.vector(msmsID))
   
  
 
@@ -140,7 +140,7 @@ dpeaqms.extract.sample<-function(msmsdata=NULL, mcmc_sample, numberOfMCMCSamples
   # Set the offset (i.e. what data point the protein observations start at) and number of observations per protein
   label = (pid==proteins[1])
   N[1] <- sum(label) 
-  m[1] <- length(unique(peptideID[label]))
+  m[1] <- length(unique(msmsID[label]))
   offset[1] = 0
   moffset[1] = 0
   if (P > 1) {
@@ -148,7 +148,7 @@ dpeaqms.extract.sample<-function(msmsdata=NULL, mcmc_sample, numberOfMCMCSamples
      prot = proteins[i] 
      label = (pid==prot)
      N[i] <- sum(label)      
-     m[i] <- length(unique(peptideID[label]))
+     m[i] <- length(unique(msmsID[label]))
      offset[i] <- offset[i-1] + N[i-1]   
      moffset[i] <- moffset[i-1] + m[i-1]
    }
@@ -201,11 +201,11 @@ dpeaqms.extract.sample<-function(msmsdata=NULL, mcmc_sample, numberOfMCMCSamples
       SigmaSampleString = paste("mcmc_sample[[1]][1:" , numberOfMCMCSamples," ,'Sigma']", sep ='')      
       if (i == P) {
        # print(paste("Last Protein" ,proteins[i]))
-        peptideInstances = unique(peptideID[(offset[i]+1):length(peptideID)])
+        peptideInstances = unique(msmsID[(offset[i]+1):length(msmsID)])
        #print(peptideInstances)
       }
       else {
-        peptideInstances = unique(peptideID[(offset[i]+1):(offset[i+1])])
+        peptideInstances = unique(msmsID[(offset[i]+1):(offset[i+1])])
       }
       ppeptides = length(peptideInstances)   
     
@@ -216,13 +216,20 @@ dpeaqms.extract.sample<-function(msmsdata=NULL, mcmc_sample, numberOfMCMCSamples
         }
       }
           
-      proteinoutputsamplesString = paste("data.frame(" , PSampleString, "," ,  BetaSampleString , "," ,GammaSampleString, ", Sigma=eval(parse(text=SigmaSampleString)),", blockEffectString , ")", sep='')    
+      proteinoutputsamplesString = paste("data.frame(" , PSampleString, "," ,  BetaSampleString , "," ,GammaSampleString, ",", blockEffectString , ")", sep='')    
       print(proteinoutputname)      
       proteinoutputsamples = eval(parse(text=proteinoutputsamplesString))  
       write.table(proteinoutputnumberOfMCMCSamples,quote=FALSE, sep="\t", row.names=FALSE, file=proteinoutputname)
     }
-
-   
+    if (!is.null(outputprefix)) {
+      sigmaoutputname = paste(outputprefix, "." , "sigma.samples",sep='')
+    }
+    else {
+      sigmaoutputname = "sigma.samples"
+    }
+    sigmaoutputsampleString = paste("data.frame(Sigma=eval(parse(text=SigmaSampleString)))")
+    sigmaoutputsamples = eval(parse(text=sigmaoutputsampleString))
+    write.table(sigmaoutputsamples, quote=F, sep="\t", row.names=FALSE, file = sigmaoutputname)
     for (e in seq(1,E)) {     
      for (s in seq(1,numberOfSamples[e])) {
          if (E == 1) {

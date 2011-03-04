@@ -10,9 +10,9 @@
 
 
 \usage{
-dpeaqms.extract.sample(msmsdata, mcmc_sample, numberOfMCMCSamples
+dpeaqms.extract.sample(msmsdata, mcmc_sample, numberOfMCMCSamples,
                        controlGroup,  referenceSampleID,
-	               samples, summaryOnly, outputprefix)
+	               summaryOnly, outputprefix)
 }
 
 \arguments{

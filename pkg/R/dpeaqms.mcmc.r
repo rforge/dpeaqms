@@ -9,7 +9,8 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
                        a.kappa=0.0,b.kappa=1.0/9.0, 
                        a.p=1.0, b.p=19.0,
                        controlGroup=NULL, referenceSampleID=NULL, 
-	               transform=T, infofilename=NULL, verbose=F, seed=NULL) {
+	               transform=T, infofilename=NULL,
+                       verbose=F, seed=NULL) {
   
   # Load the R JAGS library
   require(rjags)
