@@ -2,7 +2,7 @@
 # output of the dpeaqms.mcmc function
 dpeaqms.extract.sample<-function(msmsdata=NULL, mcmc_sample, numberOfMCMCSamples,
                                  controlGroup=NULL,  referenceSampleID=NULL,
-	                         summaryOnly=F, outputprefix=NULL) {
+	                         summaryOnly=FALSE, outputprefix=NULL) {
 
  experimentID = msmsdata$experiment
   proteinID    = msmsdata$protein
@@ -229,7 +229,7 @@ dpeaqms.extract.sample<-function(msmsdata=NULL, mcmc_sample, numberOfMCMCSamples
     }
     sigmaoutputsampleString = paste("data.frame(Sigma=eval(parse(text=SigmaSampleString)))")
     sigmaoutputsamples = eval(parse(text=sigmaoutputsampleString))
-    write.table(sigmaoutputsamples, quote=F, sep="\t", row.names=FALSE, file = sigmaoutputname)
+    write.table(sigmaoutputsamples, quote=FALSE, sep="\t", row.names=FALSE, file = sigmaoutputname)
     for (e in seq(1,E)) {     
      for (s in seq(1,numberOfSamples[e])) {
          if (E == 1) {
@@ -314,7 +314,7 @@ dpeaqms.extract.sample<-function(msmsdata=NULL, mcmc_sample, numberOfMCMCSamples
     resultsEvalString =paste(resultsEvalString,")",sep='')
     results = eval(parse(text=resultsEvalString))
 
-    myord = order(results[,2], decreasing=T)
+    myord = order(results[,2], decreasing=TRUE)
     if (!is.null(outputprefix)) {
        resultsoutputfile = paste(outputprefix, ".results", sep = "")
     }

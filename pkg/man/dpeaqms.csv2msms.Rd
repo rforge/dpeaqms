@@ -7,14 +7,14 @@
 information in order to create an MSMS data frame useable by the other functions in the dpeaqms package}
 
 \usage{
-  dpeaqms.csv2msms(csvfile, proteinColumn, msmsidColumn,
+  dpeaqms.csv2msms(csvfiles, proteinColumn, msmsidColumn,
                    reporterIonNames, sampleGroupAssignment,
                    includeUnknownProteins)
 
 }
 
 \arguments{
-\item{csvfile}{The csvfile(s) containing the reporter ion intensities, protein accession and other ms/ms information. The default is NULL.}
+\item{csvfiles}{The csvfile(s) containing the reporter ion intensities, protein accession and other ms/ms information. The default is NULL.}
 \item{proteinColumn}{The column number corresponding to the protein accession. The default is 1 i.e. the first column.}
 \item{msmsidColumn}{The column number(s) to use in order to construct the MS/MS identifier. The default is NULL in which case the msmsIDs will simple be integers.}
 \item{reporterIonNames}{A list containing the reporter ion intensity column names. By default these are those for a TMT 6-plex i.e. c(126,127,128,129,130,131)}

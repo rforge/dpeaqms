@@ -31,7 +31,7 @@ dpeaqms.create.msmsdata<-function(datafiles) {
   # Read in the MSMS quantitative data
   for (i in seq(1,E)) {
      # Read the data to a temporary file
-     temp <- read.table(datafiles[i], header=T, as.is=T)
+     temp <- read.table(datafiles[i], header=TRUE, as.is=TRUE)
      proteinID = c(proteinID,temp[[proteinColumn]])
      intensity = c(intensity, temp[[intensityColumn]])
      # Tag the peptideID with an experiment number prefix and a "replicate" prefix

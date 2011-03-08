@@ -3,7 +3,7 @@
 dpeaqms.csv2msms<-function(csvfiles=NULL, proteinColumn=1 , msmsidColumn=NULL,
                            reporterIonNames=c(126,127,128,129,130,131) ,                           
                            sampleGroupAssignment=c("A","A","A","B","B","B"),
-                           includeUnknownProteins=T) {
+                           includeUnknownProteins=TRUE) {
  
   if (!is.null(csvfiles)) {
     proteinID    = c()
@@ -13,7 +13,7 @@ dpeaqms.csv2msms<-function(csvfiles=NULL, proteinColumn=1 , msmsidColumn=NULL,
     msmsID       = c()
     experimentID = c()
     for (d in seq(1,length(csvfiles))) {
-      csvdata <- read.table(csvfiles[d], header=T, sep=",", as.is=T)
+      csvdata <- read.table(csvfiles[d], header=TRUE, sep=",", as.is=TRUE)
       offset = length(experimentID)
       expsize = dim(csvdata)
       numObservations = expsize[1]*length(reporterIonNames)
@@ -74,12 +74,23 @@ dpeaqms.csv2msms<-function(csvfiles=NULL, proteinColumn=1 , msmsidColumn=NULL,
   }
 
   missingIntensity = is.na(intensity) | is.nan(intensity)
-  experimentID = experimentID[!missingIntensity]
-  proteinID    = proteinID[!missingIntensity]
-  intensity    = intensity[!missingIntensity]
-  sampleID     = sampleID[!missingIntensity]
-  groupID      = groupID[!missingIntensity]
-  msmsID       = msmsID[!missingIntensity]
+  if (!includeUnknownProteins) {
+     unknownProteins = proteinID=="Unknown"
+     experimentID = experimentID[!missingIntensity & !unknownProteins]
+     proteinID    = proteinID[!missingIntensity & !unknownProteins]
+     intensity    = intensity[!missingIntensity & !unknownProteins]
+     sampleID     = sampleID[!missingIntensity & !unknownProteins]
+     groupID      = groupID[!missingIntensity & !unknownProteins]
+     msmsID       = msmsID[!missingIntensity & !unknownProteins]
+  }
+  else {
+     experimentID = experimentID[!missingIntensity]
+     proteinID    = proteinID[!missingIntensity]
+     intensity    = intensity[!missingIntensity]
+     sampleID     = sampleID[!missingIntensity]
+     groupID      = groupID[!missingIntensity]
+     msmsID       = msmsID[!missingIntensity]
+  }
   msmsdata<-data.frame("experiment"=experimentID,"protein"=proteinID,  "intensity"=intensity,
                        "sample"=sampleID, "group"=groupID, "msmsID"=msmsID)
   return(msmsdata)

@@ -3,40 +3,35 @@
 \usepackage{url}
 \title{What is dpeaqms?}
 \author{Howsun Jow}
-% \VignetteIndexEntry{dpeaqms}
+%\VignetteIndexEntry{dpeaqms}
 \begin{document}
 \maketitle
 
 \section{Overview}
 dpeaqms stands for {\bf D}ifferential {\bf P}rotein {\bf E}xpression 
 {\bf Analysis} using {\bf Q}uantitative {\bf M}ass {\bf S}pectrometry. 
-More specifically it is a package of statistical tools for the
-analysis of quantitative proteomic data, obtained from mass spectrometric 
-analyses of isobaric labelled protein samples, for differential
-expression between groups to which the samples are assigned. Examples
-of stable isotope labelling techniques include SILAC, iTRAQ and TMT.
+More specifically it is a statistical tool for the analysis of quantitative 
+proteomic data, obtained from mass spectrometric analyses of isobaric labelled 
+protein samples, for differential protein expression between groups of samples. 
 
-The package is written in the R language (\url{www.r-project.org}) but 
-requires only basic understanding of the language in order to use.
+A Bayesian statistical approach is used for the analysis carried out in
+this package and it makes use of the JAGS (Just Another Gibbsian 
+Sampler) software library via the rjags package.
 
-\section{Prerequisites}
+\section{Design}
 
-A Bayesian statistical approach is used for the analyses carried out
-by the tools in the package. This makes use of the rjags package
-which provides an interface to JAGS (Just Another Gibbsian Sampler) 
-(\url{http://www-ice.iarc.fr/~martyn/software/jags/}) native libraries. 
-Both will need to be installed in order to use the dpeaqms.
+Instead of a single monolithic function that performs all stages of the analysis
+dpeaqms is modularized with a number of utility functions in addition to the
+main analysis function.
 
+There two utility functions, dpeaqms.csv2msms and dpeaqms.extract.sample, provided.
+The first converts a csv file into a compatible R data frame object 
+used by the analysis function, dpeaqms.mcmc. The second (dpeaqms.extract.sample) 
+extracts the data from the output MCMC list object into a series of tsv files 
+(or a single summary file).
 
-\section{The Data}
-
-The dpeaqms package takes in data in simple tabular text format with
-the column headers: {\bf experiment, msmsID, protein, sample, group} and 
-{\bf intensity}.
-
-Each line describes a single data point consisting of an experiment ID 
-(``experiment''), an msms spectrum id (``msmsID''), a protein to which the 
-msms spectrum is assigned (``protein''), an intensity measure (``intensity''),
-a sample identifier (``sample'') and a group identifier (``group'').
+The user is under no obligation to make use of these functions and can both convert their
+own data to a compatible data frame object and perform their own analysis of the 
+out of the analysis (dpeaqms.mcmc) function. 
 
 \end{document}
