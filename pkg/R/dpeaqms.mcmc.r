@@ -15,7 +15,7 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
   # Load the R JAGS library
   require(rjags)
   # Load the differential protein expression model
-  data(dpeaqms::dpeaqms.model)
+  data(dpeaqms.model)
  
   # Record MCMC parameters i.e. burn-in, samples, thinning and prior parameters
   # run parameters to the specified info file

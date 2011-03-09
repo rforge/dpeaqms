@@ -6,6 +6,5 @@ Author: Howsun Jow <Howsun.Jow@ncl.ac.uk>
 Maintainer: Howsun Jow <Howsun.Jow@ncl.ac.uk>
 Depends: R (>= 2.6.0), rjags
 LazyData: no 
-Description: Provides tools for differential protein expression analyses from mass spectrometric analyses of isobaric labeled protein samples, 
-using a Bayesian statistical approach.
+Description: Provides tools for differential protein expression analyses from mass spectrometric analyses of isobaric labeled protein samples, using a Bayesian statistical approach.
 License: LGPL

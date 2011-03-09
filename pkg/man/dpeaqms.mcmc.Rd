@@ -64,10 +64,10 @@
   library(dpeaqms)
 
   # Load the simulated dataset that comes with the package
-  simdata <- dataset(dpeaqms.simulatedDataset1)
-
+  data(dpeaqms.simulatedDataset1)
+  simdata <- dpeaqms.simulatedDataset1
   # Sample from the posterior distribution of the model
   simdataSamples <- dpeaqms.mcmc(msmsdata=simdata, transform=FALSE,
-                                 samples=1000, thin=100, burnin=1000)
+                                 samples=100, thin=10, burnin=1000)
 }
 \keyword{mcmc, proteomics}
