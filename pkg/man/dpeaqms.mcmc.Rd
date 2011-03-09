@@ -17,10 +17,10 @@
 
 \arguments{
   \item{msmsdata}{A data frame containing the MS/MS data. The data frame
-    should have columns experiment, protein, msmsID, intensity,
-    sample and group.}
+    should have the columns: "experiment", "protein", "msmsID", "intensity",
+    "sample" and "group".}
   \item{burnin}{The number of initial MCMC iterations to be discarded.}
-  \item{samples}{The number of samples to taken of the MCMC chain}
+  \item{samples}{The number of samples to take from the MCMC chain.}
   \item{thin}{This is the thinning interval on the sampled MCMC chain
     i.e. the interval between consecutive samples}
   \item{a.alpha}{The mean of the Gaussian prior distribution on the
@@ -57,6 +57,17 @@
     for reproducible output}
 }
 
-\value{A sample from the posterior distribution in coda format}
+\value{A sample from the posterior distribution in coda compatible format}
 
+\examples{
+  # Load the dpeaqms library
+  library(dpeaqms)
+
+  # Load the simulated dataset that comes with the package
+  simdata <- dataset(dpeaqms.simulatedDataset1)
+
+  # Sample from the posterior distribution of the model
+  simdataSamples <- dpeaqms.mcmc(msmsdata=simdata, transform=FALSE,
+                                 samples=1000, thin=100, burnin=1000)
+}
 \keyword{mcmc, proteomics}
