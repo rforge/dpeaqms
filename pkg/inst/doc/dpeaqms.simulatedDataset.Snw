@@ -1,0 +1,36 @@
+\documentclass [a4paper]{article}
+\usepackage{url}
+\title{Analyzing the provided simulated dataset}
+\author{Howsun Jow}
+%\VignetteIndexEntry{dpeaqms.simulatedDataset}
+\begin{document}
+\maketitle
+
+In this vignette we go through the analysis of the simulated dataset (dpeaqms.simulatedDataset1) included 
+in the dpeaqms package.
+
+Load the library and the simulated dataset using the commands
+<<>>=
+library(dpeaqms)
+data(dpeaqms.simulatedDataset1)
+@
+
+A simple short analysis can be performed using the command
+
+<<>>=
+simdataSamples <- dpeaqms.mcmc(msmsdata=dpeaqms.simulatedDataset1, transform=FALSE,
+                               samples=100, thin=10, burnin=1000)
+@
+
+This runs the analysis function which samples from the distribution of the
+model parameters given the data (the ``msmsdata'' parameter). The ``transform''
+parameter specifies that the intensity data is not to be log transformed.
+The ``samples'' parameter specifies the number of samples to be taken.
+The ``thin'' sample specifies the number of iterations of the MCMC algorithm to
+skip between successive samples. Finally the ``burnin'' parameter specifies 
+the number of initial iterations of the MCMC algorithm to discard before starting
+to draw samples.
+
+
+\end{document}
+\maketitle

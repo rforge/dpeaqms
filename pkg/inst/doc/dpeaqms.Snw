@@ -1,4 +1,3 @@
-
 \documentclass [a4paper]{article}
 \usepackage{url}
 \title{What is dpeaqms?}
@@ -20,18 +19,23 @@ Sampler) software library via the rjags package.
 
 \section{Design}
 
-Instead of a single monolithic function that performs all stages of the analysis
-dpeaqms is modularized with a number of utility functions in addition to the
-main analysis function.
+The package provides three functions. The first, dpeaqms.csv2msms, is a utility function 
+for the conversion of csv files into a data structure that the other functions
+can interpret. This is an R data frame object with the columns "experiment", "protein", 
+"msmsid", "sample", "group" and "intensity".
 
-There two utility functions, dpeaqms.csv2msms and dpeaqms.extract.sample, provided.
-The first converts a csv file into a compatible R data frame object 
-used by the analysis function, dpeaqms.mcmc. The second (dpeaqms.extract.sample) 
-extracts the data from the output MCMC list object into a series of tsv files 
-(or a single summary file).
+The second function, dpeaqms.mcmc, is the analysis function. This samples from the
+posterior distribution of the model parameters using a Markov Chain Monte Carlo (MCMC)
+algorithm. The output of the function an object of type mcmc.list as in the coda package.
+The third function is another utility function. It extracts the samples from the 
+mcmc.list object output dpeaqms.mcmc and writes them to tsv files.
 
-The user is under no obligation to make use of these functions and can both convert their
-own data to a compatible data frame object and perform their own analysis of the 
-out of the analysis (dpeaqms.mcmc) function. 
+The users is under no obligation to make use of the utility functions and can both convert 
+their own data to a compatible data frame object and perform their own analysis on the
+output of the dpeaqms function.
+
+\section{References}
+
+tbc.
 
 \end{document}
