@@ -155,6 +155,7 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
   peptideNames = gsub('[(|)|\"]', '' , unique.default(msmsID))
  
   # Numerically encode the peptides
+  msmsNames<-levels(msmsID)
   Npeptides <- length(levels(msmsID))
   levels(msmsID) <- seq(1,length(levels(msmsID)))
   msmsID <- as.numeric(as.vector(msmsID))
@@ -272,9 +273,9 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
     AlphaInit[i] = mean(intensity[labelmatch & groupmatch])  
   }
   
- # if (verbose) {
- #    print(AlphaInit)
- # }
+  if (verbose) {
+     print(AlphaInit)
+  }
 
   # Initialize the "Gamma"
   GammaInit = matrix(nrow=G, ncol=P)
@@ -301,13 +302,16 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
     }
   }
   
-  #if (verbose) { 
-  #   print(GammaInit)
-
+  if (verbose) { 
+     print(GammaInit)
+  }
   # Initialize Tau 
   sum = 0.0
   for (j in seq(1,length(intensity))) {
     Y = intensity[j]
+   # print(paste( j , ", msmsName = " , msmsdata$msmsID[j], sep=""))
+    
+   # print(AlphaInit[msmsID[j]] - (GammaInit[groupID[j],proteinID[j]] * BetaInit[groupID[j],proteinID[j]]))
     sum = sum + (Y - AlphaInit[msmsID[j]] - (GammaInit[groupID[j],proteinID[j]] * BetaInit[groupID[j],proteinID[j]]))^2
   }
   # tau is the inverse variance i.e. the precision

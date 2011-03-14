@@ -2,7 +2,7 @@
 # msms data
 dpeaqms.csv2msms<-function(csvfiles=NULL, proteinColumn=1 , msmsidColumn=NULL,
                            reporterIonNames=c(126,127,128,129,130,131) ,                           
-                           sampleGroupAssignment=c("A","A","A","B","B","B"),
+                           sampleGroupAssignment=list(c("A","A","A","B","B","B")),
                            includeUnknownProteins=TRUE) {
  
   if (!is.null(csvfiles)) {
@@ -12,10 +12,17 @@ dpeaqms.csv2msms<-function(csvfiles=NULL, proteinColumn=1 , msmsidColumn=NULL,
     groupID      = c()
     msmsID       = c()
     experimentID = c()
+    numAssignments = length(sampleGroupAssignment)
     for (d in seq(1,length(csvfiles))) {
       csvdata <- read.table(csvfiles[d], header=TRUE, sep=",", as.is=TRUE)
       offset = length(experimentID)
       expsize = dim(csvdata)
+      if (numAssignments >= d) {
+         sGA <- sampleGroupAssignment[[d]]
+      }
+      else {
+         sGA <- sampleGroupAssignment[[numAssignments]]
+      }
       numObservations = expsize[1]*length(reporterIonNames)
       experimentID = c(experimentID,rep(d, numObservations))
       proteinID    = c(proteinID, rep("", numObservations))
@@ -41,7 +48,7 @@ dpeaqms.csv2msms<-function(csvfiles=NULL, proteinColumn=1 , msmsidColumn=NULL,
         msmsName = csvdata[,msmsidColumn[1]]
         for (z in seq(2,length(msmsidColumn))) {
           temp = csvdata[,msmsidColumn[z]]
-          temp = gsub('[)$]', '' , temp)
+          temp = gsub('[)$-]', '' , temp)
           temp = gsub('[(|)|\"]', '.' , temp)
           temp = gsub('[ ]+','',temp)          
           msmsName = paste(msmsName, temp, sep=".")
@@ -63,7 +70,8 @@ dpeaqms.csv2msms<-function(csvfiles=NULL, proteinColumn=1 , msmsidColumn=NULL,
           intensity[L+j] = csvdata[i,ionIntensityColumns[j+1]]
         }
         sampleID[L:U]  = reporterIonNames
-        groupID[L:U]   = sampleGroupAssignment
+    
+        groupID[L:U]   = sGA
         msmsID[L:U]    = msmsName[i]
       }
     }
