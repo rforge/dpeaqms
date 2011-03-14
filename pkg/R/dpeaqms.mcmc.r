@@ -271,6 +271,9 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
     #print(intensity[labelmatch & groupmatch])
     #print(sum(labelmatch & groupmatch))
     AlphaInit[i] = mean(intensity[labelmatch & groupmatch])  
+    if (is.nan(AlphaInit[i])) {
+      AlphaInit[i] = mean(intensity[labelmatch])
+    }
   }
   
   if (verbose) {
@@ -310,7 +313,13 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
   for (j in seq(1,length(intensity))) {
     Y = intensity[j]
    # print(paste( j , ", msmsName = " , msmsdata$msmsID[j], sep=""))
-    
+    if (is.nan(AlphaInit[msmsID[j]] - (GammaInit[groupID[j],proteinID[j]] * BetaInit[groupID[j],proteinID[j]]))) {
+       print(paste( j , ", msmsName = " , msmsdata$msmsID[j], sep=""))
+       print(AlphaInit[msmsID[j]] - (GammaInit[groupID[j],proteinID[j]] * BetaInit[groupID[j],proteinID[j]]))
+       print(AlphaInit[msmsID[j]])
+       print((GammaInit[groupID[j],proteinID[j]] * BetaInit[groupID[j],proteinID[j]]))
+       return(NULL)
+    }
    # print(AlphaInit[msmsID[j]] - (GammaInit[groupID[j],proteinID[j]] * BetaInit[groupID[j],proteinID[j]]))
     sum = sum + (Y - AlphaInit[msmsID[j]] - (GammaInit[groupID[j],proteinID[j]] * BetaInit[groupID[j],proteinID[j]]))^2
   }
@@ -318,9 +327,9 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
   #print(paste("sum = ", sum))
   myvar = sum/length(intensity)
   tauinit = 1.0/myvar
-  if (verbose) {
+  #if (verbose) {
     print(paste("Var Init = " , myvar))
-  }
+  #}
 
   kappainit = matrix(nrow=E, ncol=max(numberOfSamples), 0)
  # for (e in seq(1,E)) {

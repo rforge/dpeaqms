@@ -49,7 +49,7 @@ dpeaqms.csv2msms<-function(csvfiles=NULL, proteinColumn=1 , msmsidColumn=NULL,
         for (z in seq(2,length(msmsidColumn))) {
           temp = csvdata[,msmsidColumn[z]]
           temp = gsub('[)$-]', '' , temp)
-          temp = gsub('[(|)|\"]', '.' , temp)
+          temp = gsub('[(|)|\|>|<"]', '.' , temp)
           temp = gsub('[ ]+','',temp)          
           msmsName = paste(msmsName, temp, sep=".")
         }

@@ -217,6 +217,7 @@ dpeaqms.extract.sample<-function(msmsdata=NULL, mcmc_sample, numberOfMCMCSamples
       }
           
       proteinoutputsamplesString = paste("data.frame(" , PSampleString, "," ,  BetaSampleString , "," ,GammaSampleString, ",", blockEffectString , ")", sep='')    
+      print(proteinoutputsamplesString)
       print(proteinoutputname)      
       proteinoutputsamples = eval(parse(text=proteinoutputsamplesString))  
       write.table(proteinoutputsamples,quote=FALSE, sep="\t", row.names=FALSE, file=proteinoutputname)
