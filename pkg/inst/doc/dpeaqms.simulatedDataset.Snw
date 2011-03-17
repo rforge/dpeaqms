@@ -6,8 +6,22 @@
 \begin{document}
 \maketitle
 
-In this vignette we go through the analysis of the simulated dataset (dpeaqms.simulatedDataset1) included 
-in the dpeaqms package.
+\section{Introduction}
+
+In this vignette we go through the analysis of a simulated dataset 
+(dpeaqms.simulatedDataset1) included in the dpeaqms package.
+
+\section{The Data}
+
+The dataset consists of $12$ samples divided into $G=4$ groups i.e. CTL ($g=1$), TRT1($g=2$), TRT2 ($g=3$) and TRT3 ($g=4$) with $3$ samples in each group. The simulation scenario
+assumed the availibility of $6$ isobaric tags only. This necessitates the 
+use of two experiments ($E=2$) with six tagged samples per experiment.
+Two samples from each the groups CTL, TRT1 and TRT2 were used in the
+first experiments while one sample from each of the groups CTL, TRT1 and TRT2
+were used in the second in addition 
+
+
+\section{Analyzing the data}
 
 Load the library and the simulated dataset using the commands
 <<>>=
