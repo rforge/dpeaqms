@@ -9,42 +9,60 @@
 \section{Introduction}
 
 In this vignette we go through the analysis of a simulated dataset 
-(dpeaqms.simulatedDataset1) included in the dpeaqms package.
+included in the dpeaqms package.
 
 \section{The Data}
 
-The dataset consists of $12$ samples divided into $G=4$ groups i.e. CTL ($g=1$), TRT1($g=2$), TRT2 ($g=3$) and TRT3 ($g=4$) with $3$ samples in each group. The simulation scenario
-assumed the availibility of $6$ isobaric tags only. This necessitates the 
-use of two experiments ($E=2$) with six tagged samples per experiment.
+The dataset consists of $12$ samples divided into $G=4$ groups i.e. CTL ($g=1$), 
+TRT1($g=2$), TRT2 ($g=3$) and TRT3 ($g=4$) with $3$ samples in each group. The 
+simulation scenario assumed the availibility of $6$ isobaric tags. This necessitates 
+the use of two experiments ($E=2$) with six tagged samples per experiment.
 Two samples from each the groups CTL, TRT1 and TRT2 were used in the
-first experiments while one sample from each of the groups CTL, TRT1 and TRT2
-were used in the second in addition 
+first experiments while one sample from each of the groups CTL, TRT1 and 
+TRT2 were used in the second in addition to the three samples from the TRT3
+group.
 
 
-\section{Analyzing the data}
+\section{Analyzing the Simulated Dataset}
 
 Load the library and the simulated dataset using the commands
-<<>>=
+
+\begin{verbatim}
 library(dpeaqms)
 data(dpeaqms.simulatedDataset1)
-@
+\end{verbatim}
 
-A simple short analysis can be performed using the command
 
-<<>>=
-simdataSamples <- dpeaqms.mcmc(msmsdata=dpeaqms.simulatedDataset1, transform=FALSE,
-                               samples=100, thin=10, burnin=1000)
-@
+A simple analysis with the prior parameters set to their
+defaults can be performed using the command
 
-This runs the analysis function which samples from the distribution of the
-model parameters given the data (the ``msmsdata'' parameter). The ``transform''
-parameter specifies that the intensity data is not to be log transformed.
-The ``samples'' parameter specifies the number of samples to be taken.
-The ``thin'' sample specifies the number of iterations of the MCMC algorithm to
-skip between successive samples. Finally the ``burnin'' parameter specifies 
-the number of initial iterations of the MCMC algorithm to discard before starting
+\begin{verbatim}
+simdataSamples <- dpeaqms.mcmc(msmsdata=dpeaqms.simulatedDataset1, 
+                               controlGroup='CTL', transform=FALSE, 
+                               samples=1000, thin=100, burnin=100000)
+\end{verbatim}
+
+
+This will draw $1000$ model parameters parameter samples from the probability 
+distribution of the model parameters given the data. The ``transform'' parameter specifies that 
+the intensity data is not to be log transformed. The ``samples'' parameter specifies 
+the number of samples to be taken. The ``thin'' sample specifies the number of iterations 
+of the MCMC algorithm to skip between successive samples. Finally the ``burnin'' parameter 
+specifies the number of initial iterations of the MCMC algorithm to discard before starting
 to draw samples.
 
+
+\section{Outputing the Results}
+
+The MCMC sample obtained by running the commands in the previous section can be analyzed using
+standard tools from the coda package. The MCMC sample can also be summarized using a function
+from the package
+
+\begin{verbatim}
+dpeaqms.extract.sample(msmsdata=dpeaqms.simulatedDataset1, 
+                       mcmc_sample=simdataSample, numberOfMCMCSamples=1000,
+                       controlGroup='CTL', summaryOnly=T)
+\end{verbatim}
 
 \end{document}
 \maketitle
