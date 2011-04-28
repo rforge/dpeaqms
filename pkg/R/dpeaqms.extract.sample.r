@@ -4,7 +4,7 @@ dpeaqms.extract.sample<-function(msmsdata=NULL, mcmc_sample, numberOfMCMCSamples
                                  controlGroup=NULL,  referenceSampleID=NULL,
 	                         summaryOnly=FALSE, outputprefix=NULL) {
 
- experimentID = msmsdata$experiment
+  experimentID = msmsdata$experiment
   proteinID    = msmsdata$protein
   intensity    = msmsdata$intensity
   msmsID    = paste("Exp" , experimentID, ".", msmsdata$msmsID, sep = "")
@@ -13,8 +13,6 @@ dpeaqms.extract.sample<-function(msmsdata=NULL, mcmc_sample, numberOfMCMCSamples
   
 
   E = length(unique(experimentID))
- 
- 
  
   # Order the data by protein, peptide, replicate and finally sample 
   myord = order(proteinID, msmsID, sampleID)
@@ -217,7 +215,7 @@ dpeaqms.extract.sample<-function(msmsdata=NULL, mcmc_sample, numberOfMCMCSamples
       }
           
       proteinoutputsamplesString = paste("data.frame(" , PSampleString, "," ,  BetaSampleString , "," ,GammaSampleString, ",", blockEffectString , ")", sep='')    
-      print(proteinoutputsamplesString)
+      #print(proteinoutputsamplesString)
       print(proteinoutputname)      
       proteinoutputsamples = eval(parse(text=proteinoutputsamplesString))  
       write.table(proteinoutputsamples,quote=FALSE, sep="\t", row.names=FALSE, file=proteinoutputname)
@@ -320,7 +318,7 @@ dpeaqms.extract.sample<-function(msmsdata=NULL, mcmc_sample, numberOfMCMCSamples
        resultsoutputfile = paste(outputprefix, ".results", sep = "")
     }
     else {
-       resultsoutputfile = "Run.Results"
+       resultsoutputfile = "Run.results"
     }
     write.table(results[myord,],quote=FALSE, sep="\t", row.names=FALSE, file=resultsoutputfile)
 }
