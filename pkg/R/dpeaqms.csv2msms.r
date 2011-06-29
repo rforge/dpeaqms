@@ -3,7 +3,7 @@
 dpeaqms.csv2msms<-function(csvfiles=NULL, proteinColumn=1 , msmsidColumn=NULL,
                            reporterIonNames=c(126,127,128,129,130,131) ,                           
                            sampleGroupAssignment=list(c("A","A","A","B","B","B")),
-                           includeUnknownProteins=TRUE) {
+                           includeUnknownProteins=TRUE, sepchar=',') {
  
   if (!is.null(csvfiles)) {
     proteinID    = c()
@@ -14,7 +14,7 @@ dpeaqms.csv2msms<-function(csvfiles=NULL, proteinColumn=1 , msmsidColumn=NULL,
     experimentID = c()
     numAssignments = length(sampleGroupAssignment)
     for (d in seq(1,length(csvfiles))) {
-      csvdata <- read.table(csvfiles[d], header=TRUE, sep=",", as.is=TRUE)
+      csvdata <- read.table(csvfiles[d], header=TRUE, sep=sepchar, as.is=TRUE)
       offset = length(experimentID)
       expsize = dim(csvdata)
       if (numAssignments >= d) {
