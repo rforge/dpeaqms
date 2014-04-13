@@ -350,7 +350,12 @@ dpeaqms.mcmc<-function(msmsdata, burnin=100000, samples=1000, thin=100,
   myc<-file(tempfilename, open="w")
   cat(dpeaqms.model,file=myc)
   close(myc)
-
+  # new initalisation code
+  modelinits$kappa[,1] <- NA 
+  modelinits$Gamma[1,] <- NA
+  modelinits$Beta[1,] <- NA
+  modelinits$p[1,] <- NA
+  # end of new initialisation code
   dpeaqms.jags.model <- jags.model(file=tempfilename, data=modeldata, inits=modelinits)
 
   # Run the MCMC chain for the specified number of burnin iterations
